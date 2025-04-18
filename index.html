@@ -1,702 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Interactive Library</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Отметка присутствия</title>
   <style>
-    /* Base styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-image: url(./libraru.jpg);
-      background-repeat: no-repeat;
-      background-size: cover;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow-x: hidden;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      max-width: 1200px;
-      padding: 2rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      padding: 40px;
+      margin: 0;
     }
 
     h1 {
-      font-size: 2.5rem;
-      color: #5d4037;
-      margin-bottom: 2rem;
       text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+      color: #ffffff;
     }
 
-    /* Bookshelf styles */
-    .bookshelf {
-      width: 100%;
-      max-width: 800px;
-      transition: opacity 0.5s ease;
-    }
-
-    .bookshelf-top {
-      height: 20px;
-      background-color: #8d6e63;
-      border-radius: 8px 8px 0 0;
-    }
-
-    .bookshelf-books {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1.5rem;
-      padding: 2rem;
-      background-color: #a1887f;
-      border-radius: 0 0 8px 8px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .book {
-      height: 200px;
-      width: 120px;
-      margin: 0 auto;
-      border-radius: 0 4px 4px 0;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      position: relative;
-      transition: transform 0.3s ease;
+    .student {
       display: flex;
-      justify-content: center;
       align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
     }
 
-    .book:hover {
-      transform: scale(1.05) translateY(-5px);
+    .student:hover {
+      background-color: #2c2c2c;
     }
 
-    .book::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 10%;
-      background: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent);
+    .student input {
+      margin-right: 12px;
+      accent-color: #4caf50;
+      transform: scale(1.2);
+      cursor: pointer;
     }
 
-    .book-title {
-      position: absolute;
+    label {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    button {
+      display: block;
+      margin: 30px auto;
+      padding: 12px 30px;
+      background-color: #4caf50;
       color: white;
-      font-weight: bold;
-      font-size: 1.2rem;
-      white-space: nowrap;
-      letter-spacing: 1px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
     }
 
-    /* Book colors */
-    .book-1 {
-      background-color: #e53935;
-    } /* Red */
-    .book-2 {
-      background-color: #1e88e5;
-    } /* Blue */
-    .book-3 {
+    button:hover {
       background-color: #43a047;
-    } /* Green */
-    .book-4 {
-      background-color: #fdd835;
-    } /* Yellow */
-    .book-5 {
-      background-color: #8e24aa;
-    } /* Purple */
-    .book-6 {
-      background-color: #00897b;
-    } /* Teal */
-
-    /* Book transition animation */
-    .book-transition {
-      position: fixed;
-      z-index: 10;
-      transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      opacity: 0;
-      pointer-events: none;
     }
 
-    .book-transition::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 10%;
-      background: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent);
+    .summary {
+      text-align: center;
+      margin-top: 20px;
     }
 
-    .book-transition-title {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) rotate(90deg);
-      color: white;
-      font-weight: bold;
-      font-size: 1.2rem;
-      white-space: nowrap;
-      letter-spacing: 1px;
+    .absent-list {
+      margin-top: 10px;
+      color: #ef5350;
     }
 
-    /* Open book styles */
-    .book-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 20;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-    }
-
-    .open-book {
-      display: flex;
-      width: 100%;
-      max-width: 800px;
-      height: 500px;
-      position: relative;
-      transform: scale(0.8);
-      opacity: 0;
-      transition: all 0.5s ease;
-    }
-
-    .book-page {
-      width: 50%;
-      background-color: #fff8e1;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .left-page {
-      border-radius: 8px 0 0 8px;
-      transform-origin: right center;
-    }
-
-    .right-page {
-      border-radius: 0 8px 8px 0;
-      transform-origin: left center;
-    }
-
-    .book-spine {
-      position: absolute;
-      left: 50%;
-      height: 100%;
-      width: 8px;
-      background: linear-gradient(to right, #d7ccc8, #bcaaa4);
-      transform: translateX(-50%);
-    }
-
-    .close-button {
-      position: absolute;
-      bottom: 1rem;
-      right: 1rem;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #e53935;
-      color: white;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s ease;
-    }
-
-    .close-button:hover {
-      background-color: #c62828;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-      color: #5d4037;
-      margin-bottom: 1.5rem;
-    }
-
-    h3 {
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
-      color: #5d4037;
-    }
-
-    p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: #3e2723;
-    }
-
-    .reveal-button {
-      margin-top: 1rem;
-      padding: 0.75rem 1.5rem;
-      background-color: #d4a056;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .reveal-button:hover {
-      background-color: #c18e3e;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    /* Animation classes */
-    .fade-out {
-      opacity: 0;
-    }
-
-    .book-opening .left-page {
-      animation: pageLeftOpen 0.8s ease-out 0.2s forwards;
-    }
-
-    .book-opening .right-page {
-      animation: pageRightOpen 0.8s ease-out 0.2s forwards;
-    }
-
-    .book-visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    /* Animations */
-    @keyframes pageLeftOpen {
-      0% {
-        transform: rotateY(90deg);
-        opacity: 0;
-      }
-      100% {
-        transform: rotateY(0deg);
-        opacity: 1;
-      }
-    }
-
-    @keyframes pageRightOpen {
-      0% {
-        transform: rotateY(-90deg);
-        opacity: 0;
-      }
-      100% {
-        transform: rotateY(0deg);
-        opacity: 1;
-      }
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .bookshelf-books {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .open-book {
-        max-width: 90%;
-        height: auto;
-        flex-direction: column;
-      }
-
-      .book-page {
-        width: 100%;
-        height: auto;
-        min-height: 250px;
-      }
-
-      .left-page {
-        border-radius: 8px 8px 0 0;
-      }
-
-      .right-page {
-        border-radius: 0 0 8px 8px;
-      }
-
-      .book-spine {
-        display: none;
-      }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
     }
   </style>
-  <body>
-    <main class="container">
-      <!-- <h1>Interactive Library</h1> -->
+</head>
+<body>
 
-      <!-- Bookshelf -->
-      <div class="bookshelf" id="bookshelf">
-        <div class="bookshelf-top"></div>
-        <div class="bookshelf-books">
-          <!-- Books will be generated by JavaScript -->
-        </div>
-      </div>
+<h1>Отметка присутствия</h1>
 
-      <!-- Book transition element (for animation) -->
-      <div class="book-transition" id="bookTransition"></div>
+<div id="student-list"></div>
 
-      <!-- Open book view -->
-      <div class="book-overlay" id="bookOverlay">
-        <div class="open-book">
-          <div class="book-page left-page">
-            <h2 id="bookTitle"></h2>
-            <h3>Сұрақ:</h3>
-            <p id="bookQuestion"></p>
-          </div>
-          <div class="book-page right-page">
-            <h3>Жауап:</h3>
-            <div id="answerContainer">
-              <button id="revealButton" class="reveal-button">
-                Жауапты көрсету
-              </button>
-              <div id="answerOptions" class="hidden"></div>
-              <p id="bookAnswer" class="hidden"></p>
-            </div>
-          </div>
-          <div class="book-spine"></div>
-          <button id="closeButton" class="close-button">✕</button>
-        </div>
-      </div>
-    </main>
+<button onclick="calculate()">Подсчитать</button>
 
-    <script>
-      // Book data
-      const books = [
-        {
-          id: 1,
-          title: "1 Сұрақ",
-          color: "book-1",
-          question: "Өзге елде сұлтан болғанша",
-          options: ["Өз еліңде ұлтан бол.", "Қыз өссе – елдің көркі, гүл өссе – жердің көркі. ", "Астың дәмін тұз келтірер, ауылдың сәнін қыз келтірер."],
-          correctAnswer: "Өз еліңде ұлтан бол.",
-        },
-        {
-          id: 2,
-          title: "2 Сұрақ",
-          color: "book-2",
-          question: "Туған жердей жер болмас,",
-          options: ["Өз еліңде ұлтан бол.", "Туған елдей ел болмас.", "Ананың көңілі – балада, баланың көңілі – далада."],
-          correctAnswer: "Туған елдей ел болмас.",
-        },
-        {
-          id: 3,
-          title: "3 Сұрақ",
-          color: "book-3",
-          question: "Ит тойған жеріне,",
-          options: ["Балалы үйдің ұрлығы жатпас.", "Ер туған жеріне.", "Балапан ұяда не көрсе, ұшқанда соны іледі."],
-          correctAnswer: "Ер туған жеріне.",
-        },
-        {
-          id: 4,
-          title: "4 Сұрақ",
-          color: "book-4",
-          question: "Әдепті адам – арлы адам,",
-          options: ["Әдепсіз адам – сорлы адам.", "Арбаның алдыңғы дөңгелегі қайда жүрсе, соңғысы сонда жүрер.", "Жиен ел болмас, желке ас болмас."],
-          correctAnswer: "Әдепсіз адам – сорлы адам.",
-        },
-        {
-          id: 5,
-          title: "5 Сұрақ",
-          color: "book-5",
-          question: "Досы көппен сыйлас,",
-          options: ["Алтын басты әйелден, бақыр басты еркек артық.", "Әке тұрып ұл сөйлесе – ержеткені, шеше тұрып қыз сөйлесе – бойжеткені.", "Досы азбен сырлас."],
-          correctAnswer: "Досы азбен сырлас.",
-        },
-        {
-          id: 6,
-          title: "6 Сұрақ",
-          color: "book-6",
-          question: "Дос – егіз,",
-          options: ["Қызың жақсы болса, өрісің кеңейеді,", "Дұшпан – сегіз.", "Ұлың жақсы болса, қонысың кеңейеді."],
-          correctAnswer: "Дұшпан – сегіз.",
-        },
-        {
-          id: 7,
-          title: "7 Сұрақ",
-          color: "book-1",
-          question: "Достың орны — төр,",
-          options: ["Ағайын тату болса – ат көп, абысын тату болса – ас көп.", "Дұшпанның орны – көр.", "Бетің қисық болса айнаға өкпелеме."],
-          correctAnswer: "Дұшпанның орны – көр.",
-        },
-        {
-          id: 8,
-          title: "8 Сұрақ",
-          color: "book-2",
-          question: "Дос жылатып айтар,",
-          options: ["Дұшпан күлдіріп айтар.", "Ниетің қисық болса ағайынға өкпелеме.", "Бала – бауыр етің."],
-          correctAnswer: "Дұшпан күлдіріп айтар.",
-        },
-        {
-          id: 9,
-          title: "9 Сұрақ",
-          color: "book-3",
-          question: "Жақсыдан үйрен,",
-          options: [
-            "Ағайынның қадірін жалалы болсаң білерсің,",
-            "Жақсы әйел – үйдің берекесі, жаман әйел – елдің келекесі.",
-            "Жаманнан жирен.",
-          ],
-          correctAnswer: "Жаманнан жирен.",
-        },
-        {
-          id: 10,
-          title: "10 Сұрақ",
-          color: "book-4",
-          question: "Әке көрген оқ жонар,",
-          options: ["Өнегелі отаудың өрісі кең.", "Ата-анаңның кадірін балалы болсаң білерсің.", "Шеше көрген тон пішер."],
-          correctAnswer: "Шеше көрген тон пішер.",
-        },
-        {
-          id: 11,
-          title: "11 Сұрақ",
-          color: "book-5",
-          question: "Қыз өссе – елдің көркі,",
-          options: ["Гүл өссе – жердің көркі.", "Не ексең, соны орасың.", "Мал баққанға бітеді."],
-          correctAnswer: "Гүл өссе – жердің көркі.",
-        },
-        {
-          id: 12,
-          title: "12 Сұрақ",
-          color: "book-6",
-          question: "Ананың көңілі – балада,",
-          options: ["Шегірткеден қорыққан егін екпес.", "Баланың көңілі – далада.", "Ине өткен жерден жіп өтеді."],
-          correctAnswer: "Баланың көңілі – далада.",
-        },
-        {
-          id: 13,
-          title: "13 Сұрақ",
-          color: "book-1",
-          question: "Астың дәмін тұз келтірер,",
-          options: ["Ауылдың сәнін қыз келтірер.", "Еңбек ет те, міндет ет.", "Малды баққанға бақтыр, отынды шапқанға жақтыр."],
-          correctAnswer: "Ауылдың сәнін қыз келтірер.",
-        },
-        {
-          id: 14,
-          title: "14 Сұрақ",
-          color: "book-2",
-          question: "Жеті рет өлшеп,",
-          options: ["Жас кезімде бейнет бер, қартайғанда зейнет бер.", "Қолы қимылдағанның аузы қимылдар.", "Бір рет кес."],
-          correctAnswer: "Бір рет кес.",
-        },
-        {
-          id: 15,
-          title: "15 Сұрақ",
-          color: "book-3",
-          question: "Қоянды – қамыс,",
-          options: ["Көз – қорқақ, қол – батыр.", "Жігітті намыс өлтіреді.", "Есің кетсе ешкі жи, ешкі жиып, есті жи."],
-          correctAnswer: "Жігітті намыс өлтіреді.",
-        },
-      ];
+<div class="summary">
+  <p>Присутствуют: <span id="present-count">0</span></p>
+  <p>Отсутствуют: <span id="absent-count">0</span></p>
+  <div class="absent-list">
+    <strong>Отсутствуют:</strong>
+    <ul id="absent-names"></ul>
+  </div>
+</div>
 
-      // DOM Elements
-      const bookshelf = document.getElementById("bookshelf");
-      const bookshelfBooks = document.querySelector(".bookshelf-books");
-      const bookTransition = document.getElementById("bookTransition");
-      const bookOverlay = document.getElementById("bookOverlay");
-      const openBook = document.querySelector(".open-book");
-      const bookTitle = document.getElementById("bookTitle");
-      const bookQuestion = document.getElementById("bookQuestion");
-      const bookAnswer = document.getElementById("bookAnswer");
-      const answerOptions = document.getElementById("answerOptions");
-      const revealButton = document.getElementById("revealButton");
-      const closeButton = document.getElementById("closeButton");
+<script>
+  const students = [
+    "Абдулина Лилиана",
+    "Абильмажинов Мансур",
+    "Айкан Чингиз",
+    "Ахмадиев Алихан",
+    "Аушев Константин",
+    "Бельфер Полина",
+    "Боброва Дарья",
+    "Власова Милана",
+    "Герман Арсений",
+    "Гриненко Даниэль",
+    "Дьяченко Валерия",
+    "Егорин Лев",
+    "Жаутиков Тамерлан",
+    "Жаманбаев Амирлан",
+    "Злавдинов Леким",
+    "Каткаева Вероника",
+    "Мукалиев Руслан",
+    "Ковалёва Кира",
+    "Ниязов Карим",
+    "Нурболатова Лия",
+    "Пак Борис",
+    "Ремизов Дильшод",
+    "Саин Алишер",
+    "Саурабек Карим",
+    "Сафаргалиева Рината",
+    "Скляренко Анастасия",
+    "Сташкова Ксения",
+    "Токат Алихан",
+    "Тулегеновв Алижан",
+    "Украинская Диана",
+    "Хижняк Арина",
+    "Ходов Артур",
+    "Черемных Лия"
+  ];
 
-      // State
-      let selectedBook = null;
-      let animationState = "idle"; // idle, opening, open, closing
+  const studentList = document.getElementById("student-list");
 
-      // Initialize books
-      function initializeBooks() {
-        books.forEach((book) => {
-          const bookElement = document.createElement("div");
-          bookElement.className = `book ${book.color}`;
-          bookElement.setAttribute("data-id", book.id);
+  students.forEach((name, index) => {
+    const div = document.createElement("div");
+    div.className = "student";
 
-          const titleElement = document.createElement("div");
-          titleElement.className = "book-title";
-          titleElement.textContent = book.title;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = `student-${index}`;
+    checkbox.dataset.name = name;
 
-          bookElement.appendChild(titleElement);
-          bookshelfBooks.appendChild(bookElement);
+    const label = document.createElement("label");
+    label.setAttribute("for", `student-${index}`);
+    label.textContent = name;
 
-          // Add click event
-          bookElement.addEventListener("click", () => handleBookClick(book));
-        });
+    div.appendChild(checkbox);
+    div.appendChild(label);
+    studentList.appendChild(div);
+  });
+
+  function calculate() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let present = 0;
+    let absent = 0;
+    const absentNames = [];
+
+    checkboxes.forEach(box => {
+      if (box.checked) {
+        present++;
+      } else {
+        absent++;
+        absentNames.push(box.dataset.name);
       }
+    });
 
-      // Handle book click
-      function handleBookClick(book) {
-        selectedBook = book;
-        animationState = "opening";
+    document.getElementById("present-count").textContent = present;
+    document.getElementById("absent-count").textContent = absent;
 
-        // Get position of the clicked book
-        const bookElement = document.querySelector(
-          `.book[data-id="${book.id}"]`
-        );
-        const rect = bookElement.getBoundingClientRect();
+    const absentList = document.getElementById("absent-names");
+    absentList.innerHTML = "";
+    absentNames.forEach(name => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      absentList.appendChild(li);
+    });
+  }
+</script>
 
-        // Set up transition element
-        bookTransition.className = `book-transition ${book.color}`;
-        bookTransition.style.top = `${rect.top}px`;
-        bookTransition.style.left = `${rect.left}px`;
-        bookTransition.style.width = `${rect.width}px`;
-        bookTransition.style.height = `${rect.height}px`;
-        bookTransition.style.opacity = "1";
-        bookTransition.style.transform = "rotateY(0deg)";
-
-        // Add title to transition element
-        bookTransition.innerHTML = `<div class="book-transition-title">${book.title}</div>`;
-
-        // Fade out bookshelf
-        bookshelf.classList.add("fade-out");
-
-        // Start animation after a small delay
-        setTimeout(() => {
-          // Calculate center position
-          const viewportWidth = window.innerWidth;
-          const viewportHeight = window.innerHeight;
-          const finalWidth = Math.min(800, viewportWidth * 0.8);
-          const finalHeight = 500;
-          const centerX = (viewportWidth - finalWidth) / 2;
-          const centerY = (viewportHeight - finalHeight) / 2;
-
-          // Animate to center
-          bookTransition.style.top = `${centerY}px`;
-          bookTransition.style.left = `${centerX}px`;
-          bookTransition.style.width = `${finalWidth}px`;
-          bookTransition.style.height = `${finalHeight}px`;
-          bookTransition.style.transform = "rotateY(180deg)";
-
-          // Show open book after transition completes
-          setTimeout(() => {
-            animationState = "open";
-
-            // Set book content
-            bookTitle.textContent = book.title;
-            bookQuestion.textContent = book.question;
-
-            // Reset answer state
-            bookAnswer.classList.add("hidden");
-            revealButton.classList.remove("hidden");
-            answerOptions.innerHTML = "";
-
-            // If book has options, show them
-            if (book.options) {
-              book.options.forEach((option) => {
-                const optionButton = document.createElement("button");
-                optionButton.className = "reveal-button";
-                optionButton.textContent = option;
-                optionButton.addEventListener("click", () =>
-                  handleOptionClick(option, book.correctAnswer)
-                );
-                answerOptions.appendChild(optionButton);
-              });
-              answerOptions.classList.remove("hidden");
-              revealButton.classList.add("hidden");
-            } else {
-              bookAnswer.textContent = book.answer;
-            }
-
-            // Show overlay and book
-            bookOverlay.style.opacity = "1";
-            bookOverlay.style.pointerEvents = "auto";
-
-            // Animate book opening
-            openBook.classList.add("book-opening", "book-visible");
-
-            // Hide transition element
-            bookTransition.style.opacity = "0";
-          }, 1000);
-        }, 50);
-      }
-
-      // Handle option click
-      function handleOptionClick(selectedOption, correctAnswer) {
-        const options = answerOptions.querySelectorAll("button");
-        options.forEach((option) => {
-          option.disabled = true;
-          if (option.textContent === correctAnswer) {
-            option.style.backgroundColor = "#43a047";
-          } else if (option.textContent === selectedOption) {
-            option.style.backgroundColor = "#e53935"; // Red for incorrect answer
-          }
-        });
-      }
-
-      // Handle close button click
-      function handleCloseBook() {
-        animationState = "closing";
-
-        // Hide open book
-        openBook.classList.remove("book-visible");
-        bookOverlay.style.opacity = "0";
-        bookOverlay.style.pointerEvents = "none";
-
-        // Get position of the original book
-        const bookElement = document.querySelector(
-          `.book[data-id="${selectedBook.id}"]`
-        );
-        const rect = bookElement.getBoundingClientRect();
-
-        // Show transition element again
-        bookTransition.style.opacity = "1";
-        bookTransition.style.transform = "rotateY(180deg)";
-
-        // Start closing animation
-        setTimeout(() => {
-          // Animate back to original position
-          bookTransition.style.top = `${rect.top}px`;
-          bookTransition.style.left = `${rect.left}px`;
-          bookTransition.style.width = `${rect.width}px`;
-          bookTransition.style.height = `${rect.height}px`;
-          bookTransition.style.transform = "rotateY(0deg)";
-
-          // Show bookshelf after animation completes
-          setTimeout(() => {
-            animationState = "idle";
-            bookshelf.classList.remove("fade-out");
-            bookTransition.style.opacity = "0";
-            openBook.classList.remove("book-opening");
-            selectedBook = null;
-          }, 1000);
-        }, 300);
-      }
-
-      // Handle reveal button click
-      function handleRevealAnswer() {
-        revealButton.classList.add("hidden");
-        bookAnswer.classList.remove("hidden");
-      }
-
-      // Event listeners
-      revealButton.addEventListener("click", handleRevealAnswer);
-      closeButton.addEventListener("click", handleCloseBook);
-
-      // Initialize
-      document.addEventListener("DOMContentLoaded", initializeBooks);
-    </script>
-  </body>
+</body>
 </html>
